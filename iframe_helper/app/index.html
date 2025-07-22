@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Widget</title>
+    <meta charset="utf-8" />
+    <!-- The following script loads the Freshworks app client library asynchronously -->
+    <script async src="{{{appclient}}}"></script>
+    <style>
+      .center-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      /* Make the button bigger */
+      fw-button#open-page {
+        --fw-button-font-size: 2rem;
+        --fw-button-padding: 2rem 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="center-container">
+      <fw-button color="primary" id="open-page">Get Dify Assistance</fw-button>
+    </div>
+  </body>
+  <script src="scripts/app.js"></script>
+  <script async type="module" src="https://cdn.jsdelivr.net/npm/@freshworks/crayons@v4/dist/crayons/crayons.esm.js"></script>
+</html>

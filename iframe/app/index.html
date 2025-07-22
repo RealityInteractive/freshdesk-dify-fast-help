@@ -1,0 +1,68 @@
+<!--Using session storage, get the weblink from the button and here retrieve it and paste it into the webbox on the page itself , no need for naything crazy with Dify-->
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dify Chat</title>
+</head>
+<body>
+  <script>
+     const grabbedURL = localStorage.getItem('grabbedURL');
+
+  </script>
+    <main style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh;">
+        <div id="iframe-container"></div>
+        <iframe 
+            src="https://knowledge.ridev.net/chat/Bfv9mW3IzzRMFKO1" 
+            width="1500" 
+            height="700" 
+            title="Embedded iframe"
+            style="background: white; border: 2px solid #000000; border-radius: 12px; margin: 75px auto; display: block;">
+        </iframe>
+    </main>
+    <script src="scripts/app.js"></script>
+</body>
+</html>
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dify Chat</title>
+</head>
+<body>
+  <div id="iframe-container"></div>
+  <script>
+    // Get the key from localStorage
+    const grabbedURL = localStorage.getItem('grabbedURL');
+
+    // If you want to pass the URL as a simple query param (not compressed):
+    if (grabbedURL) {
+      // Build the iframe src with the URL param
+      const chatbotId = 'Bfv9mW3IzzRMFKO1';
+      // Example: pass as ?freshdesk_link=...
+      const iframeSrc = `https://knowledge.ridev.net/chat/${chatbotId}?freshdesk_link=${encodeURIComponent(grabbedURL)}`;
+
+      // Create and inject the iframe
+      const iframe = document.createElement('iframe');
+      iframe.src = iframeSrc;
+      iframe.width = '1500';
+      iframe.height = '700';
+      iframe.title = 'Embedded iframe';
+      iframe.style.background = 'white';
+      iframe.style.border = '2px solid #000000';
+      iframe.style.borderRadius = '12px';
+      iframe.style.margin = '75px auto';
+      iframe.style.display = 'block';
+
+      document.getElementById('iframe-container').appendChild(iframe);
+    } else {
+      document.getElementById('iframe-container').innerText = 'Chat key not found in local storage.';
+    }
+  </script>
+</body>
+</html>
