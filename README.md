@@ -1,0 +1,1 @@
+This Project consists of two folders. iframe, which is the folder containing the full-page-app with the iframe of RI's dify chatbot, and iframe-helper, a sidebar-app which consists of a simple button, which upon being clicked redirects you to the full-page-app which is pre-filled with the link of the previous freshdesk ticket
