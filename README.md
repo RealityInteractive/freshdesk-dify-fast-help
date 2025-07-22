@@ -11,7 +11,7 @@ This project is hingent on an SDK made by Freshworks known as FDK. FDK is quite 
 | `fdk pack`       | Packages the app for deployment        |
 | `fdk pack -s`    | Same as above, but skips validation    |
 
-Upon using fdk run, go to the realityinteractive.freshdesk.com page, and visit the tickets portion. There, type `?dev=true` into the URL, and the app should run as `In-Development`
+Upon using `fdk run`, go to the `realityinteractive.freshdesk.com` page, and visit the `tickets` portion. There, type `?dev=true` into the URL, and the app should run as `In-Development`
 
 Note: in order to upload custom apps to freshdesk, zipping it up as normal does NOT work. Please use `fdk pack -s` and ensure the project has the correct `manifest.json` before uploading.
 `fdk pack -s` will pack the project into a specific type of zip, and will put that zip into a folder known as `dist`, which it automatically creates for you upon running the command. 
