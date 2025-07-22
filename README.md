@@ -16,4 +16,5 @@ Note: in order to upload custom apps to freshdesk, zipping it up as normal does 
 
 If you wish to learn more about creating applications in Freshdesk, I'd reccomend reading through some of their documentation:
 https://developers.freshworks.com/docs/tutorials/
+
 https://developers.freshworks.com/docs/tutorials/foundations/hello/freshdesk/step-3/
