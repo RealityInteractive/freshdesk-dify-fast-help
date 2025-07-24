@@ -1,7 +1,10 @@
-This repo consists of two folders. `iframe`, which is the folder containing the `full-page-app` with the iframe of Reality Interactive's Dify chatbot, and `iframe-helper`, a `sidebar-app` which consists of a button, which upon being clicked redirects you to the `full-page-app` which is pre-filled with the link of the previous Freshdesk ticket
+This repo consists of two folders. 
+- First: `iframe`: contains a full-page app that embeds Reality Interactive's Dify chatbot using an <iframe>.
+- Second: `iframe-helper`: a `sidebar-app` that includes a button. When clicked, it redirects the user to the full-page app, pre-filled with the URL of the current Freshdesk ticket.
+
 
 `Further Context for this project`: 
-This project is hingent on an SDK made by Freshworks known as FDK. FDK is quite finicky, so here are some key commands useful in ensuring you can use this project / create your own Freshdesk Custom App. 
+This project relies on the Freshworks Developer Kit (FDK)—an SDK provided by Freshworks for building Freshdesk custom apps. FDK can be somewhat finicky, so here are some key commands and notes for using it effectively:
 
 | Command          | Description                            |
 | ---------------- | -------------------------------------- |
@@ -11,12 +14,24 @@ This project is hingent on an SDK made by Freshworks known as FDK. FDK is quite 
 | `fdk pack`       | Packages the app for deployment        |
 | `fdk pack -s`    | Same as above, but skips validation    |
 
-Upon using `fdk run`, go to the `realityinteractive.freshdesk.com` page, and visit the `tickets` portion. There, type `?dev=true` into the URL, and the app should run as `In-Development`
+`Running the App Locally`:
+To test the app locally:
+- 1. Run fdk run inside the app folder.
+- 2. Navigate to https://realityinteractive.freshdesk.com.
+- 3. Visit the Tickets section.
+- 4. Append ?dev=true to the URL.
+  - Example: https://realityinteractive.freshdesk.com/a/tickets/{yourticketnumber}?dev=true
+  - This enables development mode and loads your custom app in Freshdesk.
 
-Note: in order to upload custom apps to freshdesk, zipping it up as normal does NOT work. Please use `fdk pack -s` and ensure the project has the correct `manifest.json` before uploading.
-`fdk pack -s` will pack the project into a specific type of zip, and will put that zip into a folder known as `dist`, which it automatically creates for you upon running the command. 
+`Important Note on Uploading Custom Apps`:
+- You cannot upload a Freshdesk custom app by simply zipping the project folder. Instead:
+  - Use fdk pack -s to package the app. This command:
+    - Skips validation.
+    - Creates a dist folder.
+    - Outputs a zip file in the correct structure for uploading to Freshdesk.
+- Make sure your manifest.json is correctly configured before packaging.
 
-If you wish to learn more about creating applications in Freshdesk, I'd reccomend reading through some of their documentation:
+If you wish to learn more about creating applications in Freshdesk, I'd recommend reading through some of their documentation:
 https://developers.freshworks.com/docs/tutorials/
 
 https://developers.freshworks.com/docs/tutorials/foundations/hello/freshdesk/step-3/
