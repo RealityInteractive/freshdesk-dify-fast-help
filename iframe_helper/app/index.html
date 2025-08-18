@@ -6,22 +6,56 @@
     <!-- The following script loads the Freshworks app client library asynchronously -->
     <script async src="{{{appclient}}}"></script>
     <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+      }
       .center-container {
         display: flex;
         justify-content: center;
         align-items: center;
         height: 100vh;
+        flex-direction: column;
       }
       /* Make the button bigger */
       fw-button#open-page {
         --fw-button-font-size: 2rem;
         --fw-button-padding: 2rem 2rem;
       }
+      .error-message {
+        color: #d32f2f;
+        background-color: #ffebee;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #ef5350;
+        margin-top: 20px;
+        max-width: 400px;
+        text-align: center;
+      }
+      .loading {
+        color: #1976d2;
+        font-size: 18px;
+        margin-bottom: 20px;
+      }
+      .success-message {
+        color: #2e7d32;
+        background-color: #e8f5e8;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #4caf50;
+        margin-top: 20px;
+        max-width: 400px;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
     <div class="center-container">
-      <fw-button color="primary" id="open-page">Get Dify Assistance</fw-button>
+      <div id="loading" class="loading">Initializing...</div>
+      <fw-button color="primary" id="open-page" disabled>Get Dify Assistance</fw-button>
+      <div id="message-container"></div>
     </div>
   </body>
   <script src="scripts/app.js"></script>
