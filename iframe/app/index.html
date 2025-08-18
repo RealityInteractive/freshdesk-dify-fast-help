@@ -26,43 +26,278 @@
 </body>
 </html>
 -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Dify Chat</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        #iframe-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .loading {
+            color: #1976d2;
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        .error-message {
+            color: #d32f2f;
+            background-color: #ffebee;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #ef5350;
+            text-align: center;
+        }
+        
+        .error-message button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .iframe {
+            width: 100%;
+            height: 100%;
+            border: 2px solid #000000;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 <body>
-  <div id="iframe-container"></div>
+  <!-- Container for the chat iframe or loading/error messages -->
+  <div id="iframe-container">
+    <div class="loading">Loading Dify Chat...</div>
+  </div>
+  
   <script>
-    // Get the key from localStorage
-    const grabbedURL = localStorage.getItem('grabbedURL');
-
-    // If you want to pass the URL as a simple query param (not compressed):
-    if (grabbedURL) {
-      // Build the iframe src with the URL param
-      const chatbotId = 'Bfv9mW3IzzRMFKO1';
-      // Example: pass as ?freshdesk_link=...
-      const iframeSrc = `https://knowledge.ridev.net/chat/${chatbotId}?freshdesk_link=${encodeURIComponent(grabbedURL)}`;
-
-      // Create and inject the iframe
-      const iframe = document.createElement('iframe');
-      iframe.src = iframeSrc;
-      iframe.width = '1500';
-      iframe.height = '700';
-      iframe.title = 'Embedded iframe';
-      iframe.style.background = 'white';
-      iframe.style.border = '2px solid #000000';
-      iframe.style.borderRadius = '12px';
-      iframe.style.margin = '75px auto';
-      iframe.style.display = 'block';
-
-      document.getElementById('iframe-container').appendChild(iframe);
-    } else {
-      document.getElementById('iframe-container').innerText = 'Chat key not found in local storage.';
+    /**
+     * Debug function to log all localStorage contents.
+     * Useful for troubleshooting storage issues.
+     */
+    function debugLocalStorage() {
+      console.log("=== localStorage Debug ===");
+      console.log("Total localStorage items:", localStorage.length);
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        const value = localStorage.getItem(key);
+        console.log(`Key: ${key}, Value: ${value}`);
+      }
+      console.log("=== End localStorage Debug ===");
     }
+
+    /**
+     * Utility function to safely get a value from localStorage.
+     * Returns a default value if access fails or key is not found.
+     */
+    function safeGetFromStorage(key, defaultValue = null) {
+      try {
+        const value = localStorage.getItem(key);
+        console.log(`Attempting to get '${key}' from localStorage:`, value);
+        return value !== null ? value : defaultValue;
+      } catch (error) {
+        console.error('localStorage access error:', error);
+        return defaultValue;
+      }
+    }
+
+    /**
+     * Refreshes the iframe if present, otherwise reloads the window.
+     * Used as a fallback for error recovery.
+     */
+    function refreshIframe() {
+      const iframe = document.getElementById('iframe');
+      if (iframe) {
+        iframe.contentWindow.location.reload(true);
+      } else {
+        // Fallback to window reload if no iframe found
+        window.location.reload();
+      }
+    }    
+
+    /**
+     * Waits for a specific key to appear in localStorage, retrying up to maxAttempts.
+     * Returns a Promise that resolves with the value or rejects if not found.
+     */
+    function waitForLocalStorageKey(key, maxAttempts = 10, delay = 1000) {
+      // Always refresh the iframe/page before starting the wait
+      refreshIframe();
+      return new Promise((resolve, reject) => {
+        let attempts = 0;
+        
+        // Function to check for the key in localStorage
+        const checkKey = () => {
+          attempts++;
+          console.log(`Checking for localStorage key '${key}' (attempt ${attempts}/${maxAttempts})`);
+          
+          const value = safeGetFromStorage(key);
+          if (value && value !== 'null' && value !== 'undefined') {
+            console.log(`Found localStorage key '${key}':`, value);
+            resolve(value);
+            return;
+          }
+          
+          if (attempts >= maxAttempts) {
+            // Give up after maxAttempts
+            console.error(`Failed to find localStorage key '${key}' after ${maxAttempts} attempts`);
+            debugLocalStorage();
+            reject(new Error(`Key '${key}' not found in localStorage`));
+            return;
+          }
+          
+          // Retry after delay
+          setTimeout(checkKey, delay);
+        };
+        
+        checkKey();
+      });
+    }
+
+    /**
+     * Main initialization function.
+     * Waits for the Freshdesk ticket URL in localStorage, then creates and injects the chat iframe.
+     * Handles errors and displays user-friendly messages.
+     */
+    function initializeIframe() {
+      const container = document.getElementById('iframe-container');
+      const iframe = document.createElement('iframe');
+      iframe.src = "";
+      
+      if (!container) {
+        console.error('Container element not found');
+        return;
+      }
+
+      console.log("Starting iframe initialization...");
+      debugLocalStorage();
+
+      // Try to get the URL with retry mechanism
+      waitForLocalStorageKey('grabbedURL', 10, 1000)
+        .then(grabbedURL => {
+          console.log("Successfully retrieved grabbedURL:", grabbedURL);
+
+          // Validate the URL is a string
+          if (!grabbedURL || typeof grabbedURL !== 'string') {
+            throw new Error('Invalid URL format');
+          }
+
+          // Validate URL format using the URL constructor
+          try {
+            new URL(grabbedURL);
+          } catch (urlError) {
+            console.error('Invalid URL format:', grabbedURL);
+            throw new Error('Invalid URL format stored in local storage');
+          }
+
+          // Build the iframe src with the Freshdesk ticket URL as a query parameter
+          const chatbotId = 'Bfv9mW3IzzRMFKO1';
+          const iframeSrc = `https://knowledge.ridev.net/chat/${chatbotId}?freshdesk_link=${encodeURIComponent(grabbedURL)}&autostart=true`;
+
+          console.log("Creating iframe with src:", iframeSrc);
+
+          // Set up the iframe element
+          iframe.src = iframeSrc;
+          iframe.title = 'Embedded Dify Chat';
+          iframe.className = 'iframe';
+
+          // Add event handler for successful load
+          iframe.onload = function() {
+            console.log('Iframe loaded successfully');
+          };
+
+          // Add event handler for load error
+          iframe.onerror = function() {
+            console.error('Iframe failed to load');
+            showError('Failed to load the chat interface. Please try refreshing the page.');
+          };
+
+          // Clear the container and add the iframe
+          container.innerHTML = '';
+          container.appendChild(iframe);
+
+          console.log('Iframe created successfully with URL:', iframeSrc);
+        })
+        .catch(error => {
+          // Handle errors in retrieving or validating the URL
+          console.error('Error initializing iframe:', error);
+          showError(`Freshdesk URL not found in local storage: ${error.message}. Please ensure you have accessed this from a Freshdesk ticket.`);
+        });
+    }
+
+    /**
+     * Displays an error message in the iframe container with a retry button.
+     * @param {string} message - The error message to display.
+     */
+    function showError(message) {
+      const container = document.getElementById('iframe-container');
+      if (container) {
+        container.innerHTML = `
+          <div class="error-message">
+            <h3>Error</h3>
+            <p>${message}</p>
+            <button onclick="location.reload()">Retry</button>
+          </div>
+        `;
+      }
+    }
+
+    // Initialize the iframe when the DOM is ready.
+    if (document.readyState === 'loading') {
+      // If the document is still loading, wait a bit and then initialize
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      document.addEventListener('DOMContentLoaded', initializeIframe);
+    } else {
+      // If DOM is already loaded, initialize immediately
+      initializeIframe();
+    }
+
+    // Clean up the iframe and localStorage when the page is about to unload
+    window.addEventListener("beforeunload", () => {
+      try {
+        // Clear the iframe src to release resources
+        const iframe = document.querySelector("#iframe-container iframe");
+        if (iframe) {
+          iframe.src = "about:blank";
+        }
+
+        // Remove the stored Freshdesk ticket link from localStorage
+        localStorage.removeItem("grabbedURL");
+
+        console.log("Iframe reset and grabbedURL cleared on page close.");
+      } catch (err) {
+        console.error("Error resetting iframe on unload:", err);
+      }
+    });
   </script>
 </body>
 </html>
