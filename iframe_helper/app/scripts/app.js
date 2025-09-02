@@ -138,8 +138,11 @@ function handleButtonClick() {
           // Wait a short time to ensure localStorage is updated before opening the new page
           setTimeout(() => {
             try {
-              // Open the Dify assistance page in a new tab
-              window.open(freshdeskURL, "_blank");
+              client.db.set("grabbedURL", { value: currentUrl }).then(() => {
+                // Now open full-page app in new tab
+                window.open(freshdeskURL, "_blank");
+              });
+              client.interface.trigger("navigate", { route: "fullpage" });
               setButtonText("Get Dify Assistance");
             } catch (openError) {
               // Handle errors opening the new page
